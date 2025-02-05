@@ -33,6 +33,8 @@ apply plugin: 'kotlin-android'
 
 android {
 
+    compileSdk 34
+
     namespace 'com.jhomlala.better_player.better_player'
 
     compileOptions {

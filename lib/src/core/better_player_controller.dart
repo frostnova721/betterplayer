@@ -1203,20 +1203,41 @@ class BetterPlayerController {
     videoPlayerController!.setAudioTrack(audioTrack.label, audioTrack.id);
   }
 
-  // ///Add [audioTrack] in the player.
-  // ///Note: Only works with HLS/DASH streams
-  // void addAudioTrack(BetterPlayerAsmsAudioTrack audioTrack) {
-  //   if (videoPlayerController == null) {
-  //     throw StateError("The data source has not been initialized");
-  //   }
-  //
-  //   if (audioTrack.language == null) {
-  //     BetterPlayerUtils.log("The audio language has not been specified. The track will not be added.");
-  //     return;
-  //   }
-  //
-  //   _betterPlayerAsmsAudioTracks?.add(audioTrack);
-  // }
+  ///Add [audioTrack] in the player.
+  ///Note: Only works with HLS/DASH streams
+  void addAsmsAudioTrack(BetterPlayerAsmsAudioTrack audioTrack) {
+    if (_betterPlayerDataSource?.useAsmsAudioTracks == false) {
+      throw StateError("The controller was initialized without setting the 'useAsmsAudioTracks' flag");
+    }
+    if (videoPlayerController == null) {
+      throw StateError("The data source has not been initialized");
+    }
+
+    if (audioTrack.language == null) {
+      BetterPlayerUtils.log("The audio language has not been specified. The track will not be added.");
+      return;
+    }
+
+    _betterPlayerAsmsAudioTracks?.add(audioTrack);
+  }
+
+  /// Add [track] in the player.
+  /// Only for HLS/DASH streams
+  void addAsmsTrack(BetterPlayerAsmsTrack track) {
+    if (_betterPlayerDataSource?.useAsmsTracks == false) {
+      throw StateError("The controller was initialized without setting the 'useAsmsTracks' flag");
+    }
+    if (videoPlayerController == null) {
+      throw StateError("The data source has not been initialized");
+    }
+
+    if (track.height == null && track.width == null) {
+      BetterPlayerUtils.log("The resolution of the track has not been specified. The track will not be added.");
+      return;
+    }
+
+    _betterPlayerAsmsTracks.add(track);
+  }
 
   ///Enable or disable audio mixing with other sound within device.
   void setMixWithOthers(bool mixWithOthers) {

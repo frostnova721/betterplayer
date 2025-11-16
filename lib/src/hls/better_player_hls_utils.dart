@@ -44,8 +44,8 @@ class BetterPlayerHlsUtils {
       if (parsedPlaylist is HlsMasterPlaylist) {
         parsedPlaylist.variants.forEach(
           (variant) {
-            tracks.add(BetterPlayerAsmsTrack(variant.videoGroupId, variant.format.width,
-                variant.format.height, variant.format.bitrate, variant.format.frameRate?.toInt(), '', ''));
+            tracks.add(BetterPlayerAsmsTrack(variant.videoGroupId ?? '', variant.format.width,
+                variant.format.height, variant.format.bitrate, variant.format.frameRate?.round() ?? 0, '', ''));
           },
         );
       }

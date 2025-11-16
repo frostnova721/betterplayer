@@ -1203,6 +1203,21 @@ class BetterPlayerController {
     videoPlayerController!.setAudioTrack(audioTrack.label, audioTrack.id);
   }
 
+  // ///Add [audioTrack] in the player.
+  // ///Note: Only works with HLS/DASH streams
+  // void addAudioTrack(BetterPlayerAsmsAudioTrack audioTrack) {
+  //   if (videoPlayerController == null) {
+  //     throw StateError("The data source has not been initialized");
+  //   }
+  //
+  //   if (audioTrack.language == null) {
+  //     BetterPlayerUtils.log("The audio language has not been specified. The track will not be added.");
+  //     return;
+  //   }
+  //
+  //   _betterPlayerAsmsAudioTracks?.add(audioTrack);
+  // }
+
   ///Enable or disable audio mixing with other sound within device.
   void setMixWithOthers(bool mixWithOthers) {
     if (videoPlayerController == null) {

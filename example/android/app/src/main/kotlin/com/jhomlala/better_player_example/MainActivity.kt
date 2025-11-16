@@ -36,7 +36,6 @@ class MainActivity : FlutterActivity() {
             val intent = Intent(this, BetterPlayerService::class.java)
             stopService(intent)
         } catch (exception: Exception) {
-
         }
     }
 }

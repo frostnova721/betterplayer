@@ -1,14 +1,12 @@
-group 'com.jhomlala.better_player.better_player'
-version '1.0-SNAPSHOT'
+group = "com.jhomlala.better_player"
+version = "1.0-SNAPSHOT"
 
 buildscript {
+    ext.kotlin_version = "1.8.22"
     ext.exoPlayerVersion = "2.19.1"
     ext.lifecycleVersion = "2.4.0-beta01"
     ext.annotationVersion = "1.2.0"
     ext.workVersion = "2.7.0"
-    ext.coreVersion = "1.6.0"
-    ext.gradleVersion = "7.0.2"
-    ext.kotlinVersion = "1.9.0"
 
     repositories {
         google()
@@ -16,59 +14,70 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.2.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath("com.android.tools.build:gradle:8.7.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
     }
 }
 
-rootProject.allprojects {
+allprojects {
     repositories {
         google()
         mavenCentral()
     }
 }
 
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
 
 android {
+    namespace = "com.jhomlala.better_player"
 
-    compileSdk 34
-
-    namespace 'com.jhomlala.better_player.better_player'
+    compileSdk = 35
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = JavaVersion.VERSION_11
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        main.java.srcDirs += "src/main/kotlin"
+        test.java.srcDirs += "src/test/kotlin"
     }
 
     defaultConfig {
-        minSdkVersion 16
+        minSdk = 21
     }
 
     dependencies {
-        implementation "com.google.android.exoplayer:exoplayer-core:$exoPlayerVersion"
-        implementation "com.google.android.exoplayer:exoplayer-hls:$exoPlayerVersion"
-        implementation "com.google.android.exoplayer:exoplayer-dash:$exoPlayerVersion"
-        implementation "com.google.android.exoplayer:exoplayer-smoothstreaming:$exoPlayerVersion"
-        implementation "com.google.android.exoplayer:exoplayer-ui:$exoPlayerVersion"
-        implementation "com.google.android.exoplayer:extension-mediasession:$exoPlayerVersion"
-        implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
-        implementation "androidx.lifecycle:lifecycle-common:$lifecycleVersion"
-        implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion"
-        implementation "androidx.annotation:annotation:$annotationVersion"
-        implementation "androidx.work:work-runtime:$workVersion"
-    }
-}
+            implementation("com.google.android.exoplayer:exoplayer-core:$exoPlayerVersion")
+            implementation("com.google.android.exoplayer:exoplayer-hls:$exoPlayerVersion")
+            implementation("com.google.android.exoplayer:exoplayer-dash:$exoPlayerVersion")
+            implementation("com.google.android.exoplayer:exoplayer-smoothstreaming:$exoPlayerVersion")
+            implementation("com.google.android.exoplayer:exoplayer-ui:$exoPlayerVersion")
+            implementation("com.google.android.exoplayer:extension-mediasession:$exoPlayerVersion")
+            implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
+            implementation("androidx.lifecycle:lifecycle-common:$lifecycleVersion")
+            implementation("androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion")
+            implementation("androidx.annotation:annotation:$annotationVersion")
+            implementation("androidx.work:work-runtime:$workVersion")
 
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+        testImplementation("org.jetbrains.kotlin:kotlin-test")
+        testImplementation("org.mockito:mockito-core:5.0.0")
+    }
+
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen {false}
+                showStandardStreams = true
+            }
+        }
+    }
 }

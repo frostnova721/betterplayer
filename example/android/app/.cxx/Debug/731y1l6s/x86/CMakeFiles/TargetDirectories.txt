@@ -1,0 +1,2 @@
+I:/Projects/betterplayer/example/android/app/.cxx/Debug/731y1l6s/x86/CMakeFiles/edit_cache.dir
+I:/Projects/betterplayer/example/android/app/.cxx/Debug/731y1l6s/x86/CMakeFiles/rebuild_cache.dir

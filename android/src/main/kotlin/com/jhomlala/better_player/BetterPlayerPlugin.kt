@@ -26,6 +26,7 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.view.TextureRegistry
 import java.lang.Exception
 import java.util.HashMap
+import androidx.core.util.size
 
 /**
  * Android platform implementation of the VideoPlayerPlugin.
@@ -84,7 +85,7 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     override fun onDetachedFromActivity() {}
 
     private fun disposeAllPlayers() {
-        for (i in 0 until videoPlayers.size()) {
+        for (i in 0 until videoPlayers.size) {
             videoPlayers.valueAt(i).dispose()
         }
         videoPlayers.clear()

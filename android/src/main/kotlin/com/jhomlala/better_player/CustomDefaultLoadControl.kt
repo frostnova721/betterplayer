@@ -1,6 +1,8 @@
 package com.jhomlala.better_player
 
-import com.google.android.exoplayer2.DefaultLoadControl
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.DefaultLoadControl
 
 internal class CustomDefaultLoadControl {
     /**
@@ -31,6 +33,7 @@ internal class CustomDefaultLoadControl {
     @JvmField
     val bufferForPlaybackAfterRebufferMs: Int
 
+    @OptIn(UnstableApi::class)
     constructor() {
         minBufferMs = DefaultLoadControl.DEFAULT_MIN_BUFFER_MS
         maxBufferMs = DefaultLoadControl.DEFAULT_MAX_BUFFER_MS
@@ -39,6 +42,7 @@ internal class CustomDefaultLoadControl {
             DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
     }
 
+    @OptIn(UnstableApi::class)
     constructor(
         minBufferMs: Int?,
         maxBufferMs: Int?,

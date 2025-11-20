@@ -3,14 +3,15 @@ package com.jhomlala.better_player
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.media3.common.util.UnstableApi
 import com.jhomlala.better_player.DataSourceUtils.isHTTP
 import com.jhomlala.better_player.DataSourceUtils.getUserAgent
 import com.jhomlala.better_player.DataSourceUtils.getDataSourceFactory
 import androidx.work.WorkerParameters
-import com.google.android.exoplayer2.upstream.cache.CacheWriter
+import androidx.media3.datasource.cache.CacheWriter
 import androidx.work.Worker
-import com.google.android.exoplayer2.upstream.DataSpec
-import com.google.android.exoplayer2.upstream.HttpDataSource.HttpDataSourceException
+import androidx.media3.datasource.DataSpec
+import androidx.media3.datasource.HttpDataSource.HttpDataSourceException
 import java.lang.Exception
 import java.util.*
 
@@ -18,6 +19,7 @@ import java.util.*
  * Cache worker which download part of video and save in cache for future usage. The cache job
  * will be executed in work manager.
  */
+@UnstableApi
 class CacheWorker(
     private val context: Context,
     params: WorkerParameters

@@ -1,8 +1,10 @@
 package com.jhomlala.better_player
 
 import android.net.Uri
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DefaultHttpDataSource
 
 internal object DataSourceUtils {
     private const val USER_AGENT = "User-Agent"
@@ -20,6 +22,7 @@ internal object DataSourceUtils {
         return userAgent
     }
 
+    @OptIn(UnstableApi::class)
     @JvmStatic
     fun getDataSourceFactory(
         userAgent: String?,

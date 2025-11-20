@@ -2,8 +2,9 @@ group = "com.jhomlala.better_player"
 version = "1.0-SNAPSHOT"
 
 buildscript {
-    ext.kotlin_version = "1.8.22"
-    ext.exoPlayerVersion = "2.19.1"
+    ext.kotlin_version = "2.1.0"
+//    ext.exoPlayerVersion = "2.19.1"
+    ext.media3Version = "1.8.0"
     ext.lifecycleVersion = "2.4.0-beta01"
     ext.annotationVersion = "1.2.0"
     ext.workVersion = "2.7.0"
@@ -53,17 +54,22 @@ android {
     }
 
     dependencies {
-            implementation("com.google.android.exoplayer:exoplayer-core:$exoPlayerVersion")
-            implementation("com.google.android.exoplayer:exoplayer-hls:$exoPlayerVersion")
-            implementation("com.google.android.exoplayer:exoplayer-dash:$exoPlayerVersion")
-            implementation("com.google.android.exoplayer:exoplayer-smoothstreaming:$exoPlayerVersion")
-            implementation("com.google.android.exoplayer:exoplayer-ui:$exoPlayerVersion")
-            implementation("com.google.android.exoplayer:extension-mediasession:$exoPlayerVersion")
-            implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
-            implementation("androidx.lifecycle:lifecycle-common:$lifecycleVersion")
-            implementation("androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion")
-            implementation("androidx.annotation:annotation:$annotationVersion")
-            implementation("androidx.work:work-runtime:$workVersion")
+        implementation "androidx.media3:media3-exoplayer:$media3Version"
+        implementation "androidx.media3:media3-exoplayer-hls:$media3Version"
+        implementation "androidx.media3:media3-exoplayer-dash:$media3Version"
+        implementation "androidx.media3:media3-exoplayer-hls:$media3Version"
+        implementation "androidx.media3:media3-exoplayer-smoothstreaming:$media3Version"
+        implementation "androidx.media3:media3-datasource-okhttp:$media3Version"
+        implementation "androidx.media3:media3-ui:$media3Version"
+        implementation "androidx.media3:media3-session:$media3Version"
+
+//        implementation "androidx.media:media:1.7.1"
+
+        implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
+        implementation("androidx.lifecycle:lifecycle-common:$lifecycleVersion")
+        implementation("androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion")
+        implementation("androidx.annotation:annotation:$annotationVersion")
+        implementation("androidx.work:work-runtime:$workVersion")
 
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         testImplementation("org.mockito:mockito-core:5.0.0")
@@ -75,7 +81,7 @@ android {
 
             testLogging {
                 events "passed", "skipped", "failed", "standardOut", "standardError"
-                outputs.upToDateWhen {false}
+                outputs.upToDateWhen { false }
                 showStandardStreams = true
             }
         }

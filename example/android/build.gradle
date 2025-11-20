@@ -5,12 +5,14 @@ allprojects {
     }
 }
 
-//rootProject.buildDir = '../build'
-//subprojects {
-//    project.buildDir = "${rootProject.buildDir}/${project.name}"
-//}
+rootProject.buildDir = '../build'
+
 subprojects {
     project.evaluationDependsOn(':app')
+
+    if (!project.projectDir.path.contains("C:\\")) {
+        project.buildDir = "${rootProject.buildDir}/${project.name}"
+    }
 }
 
 tasks.register("clean", Delete) {

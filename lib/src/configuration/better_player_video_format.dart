@@ -4,4 +4,5 @@ enum BetterPlayerVideoFormat {
   hls,
   ss,
   other,
+  auto,
 }

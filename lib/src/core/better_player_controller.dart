@@ -420,8 +420,8 @@ class BetterPlayerController {
 
   ///Get VideoFormat from BetterPlayerVideoFormat (adapter method which translates
   ///to video_player supported format).
-  VideoFormat? _getVideoFormat(
-      BetterPlayerVideoFormat? betterPlayerVideoFormat) {
+  Future<VideoFormat?> _getVideoFormat(
+      BetterPlayerVideoFormat? betterPlayerVideoFormat) async {
     if (betterPlayerVideoFormat == null) {
       return null;
     }
@@ -434,6 +434,29 @@ class BetterPlayerController {
         return VideoFormat.ss;
       case BetterPlayerVideoFormat.other:
         return VideoFormat.other;
+      case BetterPlayerVideoFormat.auto: {
+        final url = this._betterPlayerDataSource!.url;
+        final mime = (await BetterPlayerUtils.getMediaMimeType(url: url, headers: this._betterPlayerDataSource!.headers ?? {}))?.toLowerCase();
+
+        // lets assume stuff if something goes wrong
+        if (mime == null || mime.contains("octet-stream")) {
+          final urlPath = Uri.parse(url).path.toLowerCase();
+
+          //guessing game
+          if (urlPath.endsWith(".m3u8") || urlPath.endsWith(".m3u")) return VideoFormat.hls;
+          if (urlPath.endsWith(".mpd") || urlPath.endsWith(".dash")) return VideoFormat.dash;
+          return VideoFormat.other;
+
+        } else if (mime.contains("mpegurl") || mime.contains("mp2t")) {
+          return VideoFormat.hls;
+
+        } else if (mime.contains("dash")) {
+          return VideoFormat.dash;
+
+        } else {
+          return VideoFormat.other;
+        }
+      }
     }
   }
 
@@ -461,7 +484,7 @@ class BetterPlayerController {
           notificationChannelName: _betterPlayerDataSource
               ?.notificationConfiguration?.notificationChannelName,
           overriddenDuration: _betterPlayerDataSource!.overriddenDuration,
-          formatHint: _getVideoFormat(_betterPlayerDataSource!.videoFormat),
+          formatHint: await _getVideoFormat(_betterPlayerDataSource!.videoFormat),
           licenseUrl: _betterPlayerDataSource?.drmConfiguration?.licenseUrl,
           certificateUrl:
               _betterPlayerDataSource?.drmConfiguration?.certificateUrl,

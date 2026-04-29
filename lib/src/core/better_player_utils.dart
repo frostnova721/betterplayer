@@ -1,4 +1,6 @@
 // Flutter imports:
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -42,10 +44,21 @@ class BetterPlayerUtils {
             ? '00'
             : '0$seconds';
 
-    final formattedTime =
-        '${hoursString == '00' ? '' : '$hoursString:'}$minutesString:$secondsString';
+    final formattedTime = '${hoursString == '00' ? '' : '$hoursString:'}$minutesString:$secondsString';
 
     return formattedTime;
+  }
+
+  static Future<String?> getMediaMimeType({required String url, Map<String, String> headers = const {}}) async {
+    final client = HttpClient();
+    try {
+      final request = await client.headUrl(Uri.parse(url));
+      headers.forEach((k, v) => request.headers.set(k, v));
+      final res = await request.close();
+      return res.headers.contentType?.mimeType;
+    } finally {
+      client.close();
+    }
   }
 
   static double calculateAspectRatio(BuildContext context) {

@@ -62,7 +62,10 @@ import androidx.media3.common.util.Util.inferContentTypeForExtension
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
+import androidx.media3.exoplayer.hls.DefaultHlsExtractorFactory
+import androidx.media3.exoplayer.hls.HlsExtractorFactory
 import androidx.media3.extractor.DefaultExtractorsFactory
+import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory
 import androidx.media3.session.MediaSession
 import com.jhomlala.better_player.DataSourceUtils.getDataSourceFactory
 import com.jhomlala.better_player.DataSourceUtils.getUserAgent
@@ -449,14 +452,21 @@ internal class BetterPlayer(
                 drmSessionManagerProvider?.let {
                     factory.setDrmSessionManagerProvider(it)
                 }
-            factory.createMediaSource(mediaItem)
+                factory.createMediaSource(mediaItem)
             }
             CONTENT_TYPE_HLS -> {
+                val extractorFactory = DefaultHlsExtractorFactory(
+                    DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES or
+                    DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS,
+                    true
+                )
+
                 val factory = HlsMediaSource.Factory(mediaDataSourceFactory)
                 drmSessionManagerProvider?.let {
                     factory.setDrmSessionManagerProvider(it)
                 }
-                    factory.createMediaSource(mediaItem)
+                factory.setExtractorFactory(extractorFactory)
+                factory.createMediaSource(mediaItem)
             }
             CONTENT_TYPE_OTHER -> {
                 val factory = ProgressiveMediaSource.Factory(

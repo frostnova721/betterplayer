@@ -499,7 +499,7 @@ internal class BetterPlayer(
             })
         surface = Surface(textureEntry.surfaceTexture())
 //        androidx.media3.common.util.Log.setLogLevel()
-        exoPlayer?.addAnalyticsListener(EventLogger("BetterPlayer"));
+//        exoPlayer?.addAnalyticsListener(EventLogger("BetterPlayer"));
         exoPlayer?.setVideoSurface(surface)
         setAudioAttributes(exoPlayer, true)
         exoPlayer?.addListener(object : Player.Listener {

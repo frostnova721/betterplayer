@@ -28,7 +28,7 @@ internal object DataSourceUtils {
         userAgent: String?,
         headers: Map<String, String>?
     ): DataSource.Factory {
-        val dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory()
+        val dataSourceFactory = DefaultHttpDataSource.Factory()
             .setUserAgent(userAgent)
             .setAllowCrossProtocolRedirects(true)
             .setConnectTimeoutMs(DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS)
@@ -38,7 +38,7 @@ internal object DataSourceUtils {
             headers.forEach { entry ->
                 notNullHeaders[entry.key] = entry.value
             }
-            (dataSourceFactory as DefaultHttpDataSource.Factory).setDefaultRequestProperties(
+            dataSourceFactory.setDefaultRequestProperties(
                 notNullHeaders
             )
         }

@@ -353,7 +353,7 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     }
 
     private fun getTextureId(betterPlayer: BetterPlayer): Long? {
-        for (index in 0 until videoPlayers.size()) {
+        for (index in 0 until videoPlayers.size) {
             if (betterPlayer === videoPlayers.valueAt(index)) {
                 return videoPlayers.keyAt(index)
             }

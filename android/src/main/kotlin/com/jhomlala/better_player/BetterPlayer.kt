@@ -79,6 +79,10 @@ import java.io.File
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
+import androidx.core.net.toUri
+import androidx.media3.common.VideoSize
+import androidx.media3.common.util.Log.LOG_LEVEL_ALL
+import androidx.media3.exoplayer.util.EventLogger
 
 
 @UnstableApi
@@ -145,7 +149,7 @@ internal class BetterPlayer(
     ) {
         this.key = key
         isInitialized = false
-        val uri = Uri.parse(dataSource)
+        val uri = dataSource?.toUri()
         var dataSourceFactory: DataSource.Factory?
         val userAgent = getUserAgent(headers)
         if (licenseUrl != null && licenseUrl.isNotEmpty()) {
@@ -197,7 +201,7 @@ internal class BetterPlayer(
         } else {
             dataSourceFactory = DefaultDataSource.Factory(context)
         }
-        val mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, cacheKey, context)
+        val mediaSource = buildMediaSource(uri!!, dataSourceFactory, formatHint, cacheKey, context)
         if (overriddenDuration != 0L) {
             val clippingMediaSourceBuilder = ClippingMediaSource.Builder(mediaSource)
             clippingMediaSourceBuilder.setStartPositionUs(0)
@@ -455,11 +459,7 @@ internal class BetterPlayer(
                 factory.createMediaSource(mediaItem)
             }
             CONTENT_TYPE_HLS -> {
-                val extractorFactory = DefaultHlsExtractorFactory(
-                    DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES or
-                    DefaultTsPayloadReaderFactory.FLAG_DETECT_ACCESS_UNITS,
-                    true
-                )
+                val extractorFactory = DefaultHlsExtractorFactory()
 
                 val factory = HlsMediaSource.Factory(mediaDataSourceFactory)
                 drmSessionManagerProvider?.let {
@@ -498,7 +498,8 @@ internal class BetterPlayer(
                 }
             })
         surface = Surface(textureEntry.surfaceTexture())
-//        exoPlayer?.addAnalyticsListener(EventLogger());
+//        androidx.media3.common.util.Log.setLogLevel()
+        exoPlayer?.addAnalyticsListener(EventLogger("BetterPlayer"));
         exoPlayer?.setVideoSurface(surface)
         setAudioAttributes(exoPlayer, true)
         exoPlayer?.addListener(object : Player.Listener {
@@ -780,7 +781,7 @@ internal class BetterPlayer(
 
     override fun hashCode(): Int {
         var result = exoPlayer?.hashCode() ?: 0
-        result = 31 * result + if (surface != null) surface.hashCode() else 0
+        result = 31 * result + (surface?.hashCode() ?: 0)
         return result
     }
 

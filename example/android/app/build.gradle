@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.jhomlala.better_player_example"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

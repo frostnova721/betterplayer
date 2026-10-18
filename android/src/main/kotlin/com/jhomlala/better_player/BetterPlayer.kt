@@ -691,45 +691,106 @@ internal class BetterPlayer(
         mediaSession = null
     }
 
-    fun setAudioTrack(name: String, index: Int, context: Context) {
+    fun getAudioTracks(): List<Map<String, Any?>> {
+        val audioTracks = ArrayList<Map<String, Any?>>()
         try {
-            val mappedTrackInfo = trackSelector.currentMappedTrackInfo
-            if (mappedTrackInfo != null) {
+            val mappedTrackInfo = trackSelector.currentMappedTrackInfo ?: return audioTracks
+            var globalIndex = 0
+            for (rendererIndex in 0 until mappedTrackInfo.rendererCount) {
+                if (mappedTrackInfo.getRendererType(rendererIndex) != C.TRACK_TYPE_AUDIO) {
+                    continue
+                }
+                val trackGroupArray = mappedTrackInfo.getTrackGroups(rendererIndex)
+                for (groupIndex in 0 until trackGroupArray.length) {
+                    val group = trackGroupArray[groupIndex]
+                    for (groupElementIndex in 0 until group.length) {
+                        val format = group.getFormat(groupElementIndex)
+                        val trackMap = HashMap<String, Any?>()
+                        trackMap["index"] = globalIndex
+                        trackMap["groupIndex"] = groupIndex
+                        trackMap["groupElementIndex"] = groupElementIndex
+                        trackMap["rendererIndex"] = rendererIndex
+                        trackMap["label"] = format.label ?: format.language ?: "Track $globalIndex"
+                        trackMap["language"] = format.language ?: "und"
+                        trackMap["mimeType"] = format.sampleMimeType
+                        trackMap["bitrate"] = format.bitrate
+                        trackMap["channelCount"] = format.channelCount
+                        audioTracks.add(trackMap)
+                        globalIndex++
+                    }
+                }
+            }
+        } catch (exception: Exception) {
+            Log.e(TAG, "getAudioTracks failed: $exception")
+        }
+        return audioTracks
+    }
+
+    fun setAudioTrack(name: String?, index: Int?, context: Context) {
+        try {
+            val mappedTrackInfo = trackSelector.currentMappedTrackInfo ?: return
+
+            // First pass: try matching BOTH index and name/language
+            if (index != null && name != null) {
+                var globalIndex = 0
                 for (rendererIndex in 0 until mappedTrackInfo.rendererCount) {
                     if (mappedTrackInfo.getRendererType(rendererIndex) != C.TRACK_TYPE_AUDIO) {
                         continue
                     }
                     val trackGroupArray = mappedTrackInfo.getTrackGroups(rendererIndex)
-                    var hasElementWithoutLabel = false
-                    var hasStrangeAudioTrack = false
                     for (groupIndex in 0 until trackGroupArray.length) {
                         val group = trackGroupArray[groupIndex]
                         for (groupElementIndex in 0 until group.length) {
                             val format = group.getFormat(groupElementIndex)
-                            if (format.label == null) {
-                                hasElementWithoutLabel = true
-                            }
-                            if (format.id != null && format.id == "1/15") {
-                                hasStrangeAudioTrack = true
-                            }
-                        }
-                    }
-                    for (groupIndex in 0 until trackGroupArray.length) {
-                        val group = trackGroupArray[groupIndex]
-                        for (groupElementIndex in 0 until group.length) {
-                            val label = group.getFormat(groupElementIndex).label
-                            if (name == label && index == groupIndex) {
-                                setAudioTrack(rendererIndex, groupIndex, groupElementIndex, context = context)
-                                return
-                            }
-
-                            ///Fallback option
-                            if (!hasStrangeAudioTrack && hasElementWithoutLabel && index == groupIndex) {
+                            val label = format.label
+                            val language = format.language
+                            val isIndexMatch = (index == globalIndex || index == groupIndex)
+                            val isNameMatch = (name.equals(label, ignoreCase = true) || name.equals(language, ignoreCase = true))
+                            if (isIndexMatch && isNameMatch) {
                                 setAudioTrack(rendererIndex, groupIndex, groupElementIndex, context)
                                 return
                             }
-                            ///Fallback option
-                            if (hasStrangeAudioTrack && name == label) {
+                            globalIndex++
+                        }
+                    }
+                }
+            }
+
+            // Second pass: match by index
+            if (index != null) {
+                var globalIndex = 0
+                for (rendererIndex in 0 until mappedTrackInfo.rendererCount) {
+                    if (mappedTrackInfo.getRendererType(rendererIndex) != C.TRACK_TYPE_AUDIO) {
+                        continue
+                    }
+                    val trackGroupArray = mappedTrackInfo.getTrackGroups(rendererIndex)
+                    for (groupIndex in 0 until trackGroupArray.length) {
+                        val group = trackGroupArray[groupIndex]
+                        for (groupElementIndex in 0 until group.length) {
+                            if (index == globalIndex || index == groupIndex) {
+                                setAudioTrack(rendererIndex, groupIndex, groupElementIndex, context)
+                                return
+                            }
+                            globalIndex++
+                        }
+                    }
+                }
+            }
+
+            // Third pass: match by name or language
+            if (name != null) {
+                for (rendererIndex in 0 until mappedTrackInfo.rendererCount) {
+                    if (mappedTrackInfo.getRendererType(rendererIndex) != C.TRACK_TYPE_AUDIO) {
+                        continue
+                    }
+                    val trackGroupArray = mappedTrackInfo.getTrackGroups(rendererIndex)
+                    for (groupIndex in 0 until trackGroupArray.length) {
+                        val group = trackGroupArray[groupIndex]
+                        for (groupElementIndex in 0 until group.length) {
+                            val format = group.getFormat(groupElementIndex)
+                            val label = format.label
+                            val language = format.language
+                            if (name.equals(label, ignoreCase = true) || name.equals(language, ignoreCase = true)) {
                                 setAudioTrack(rendererIndex, groupIndex, groupElementIndex, context)
                                 return
                             }

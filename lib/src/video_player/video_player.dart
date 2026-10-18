@@ -617,6 +617,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     value = value.copyWith();
   }
 
+  Future<List<Map<dynamic, dynamic>>> getAudioTracks() async {
+    return _videoPlayerPlatform.getAudioTracks(_textureId);
+  }
+
   void setAudioTrack(String? name, int? index) {
     _videoPlayerPlatform.setAudioTrack(_textureId, name, index);
   }

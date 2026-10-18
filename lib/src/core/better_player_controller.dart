@@ -801,6 +801,9 @@ class BetterPlayerController {
         !_hasCurrentDataSourceInitialized) {
       _hasCurrentDataSourceInitialized = true;
       _postEvent(BetterPlayerEvent(BetterPlayerEventType.initialized));
+      if (_betterPlayerAsmsAudioTracks == null || _betterPlayerAsmsAudioTracks!.isEmpty) {
+        getAudioTracks();
+      }
     }
     if (currentVideoPlayerValue.isPip) {
       _wasInPipMode = true;
@@ -1211,15 +1214,46 @@ class BetterPlayerController {
     }
   }
 
-  ///Set [audioTrack] in player. Works only for HLS or DASH streams.
+  /// List of all possible audio tracks. If ASMS tracks were detected from master playlist,
+  /// returns them. Otherwise queries the native player (for MKV, MP4, etc.).
+  Future<List<BetterPlayerAsmsAudioTrack>> getAudioTracks() async {
+    if (_betterPlayerAsmsAudioTracks != null &&
+        _betterPlayerAsmsAudioTracks!.isNotEmpty) {
+      return _betterPlayerAsmsAudioTracks!;
+    }
+    if (videoPlayerController == null) {
+      return [];
+    }
+    try {
+      final nativeTracks = await videoPlayerController!.getAudioTracks();
+      final List<BetterPlayerAsmsAudioTrack> parsed = [];
+      for (final track in nativeTracks) {
+        final int index = track['index'] as int? ?? 0;
+        final String? label = track['label'] as String?;
+        final String? language = track['language'] as String?;
+        final String? mimeType = track['mimeType'] as String?;
+        parsed.add(BetterPlayerAsmsAudioTrack(
+          id: index,
+          label: label ?? language ?? "Track $index",
+          language: language ?? "und",
+          mimeType: mimeType,
+        ));
+      }
+      if (parsed.isNotEmpty) {
+        _betterPlayerAsmsAudioTracks = parsed;
+        _betterPlayerAsmsAudioTrack ??= parsed.first;
+      }
+      return parsed;
+    } catch (e) {
+      BetterPlayerUtils.log("Failed to get native audio tracks: $e");
+      return [];
+    }
+  }
+
+  ///Set [audioTrack] in player.
   void setAudioTrack(BetterPlayerAsmsAudioTrack audioTrack) {
     if (videoPlayerController == null) {
       throw StateError("The data source has not been initialized");
-    }
-
-    if (audioTrack.language == null) {
-      _betterPlayerAsmsAudioTrack = null;
-      return;
     }
 
     _betterPlayerAsmsAudioTrack = audioTrack;

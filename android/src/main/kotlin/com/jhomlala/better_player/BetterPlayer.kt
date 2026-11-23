@@ -60,6 +60,7 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.common.util.Util
 import androidx.media3.common.util.Util.inferContentTypeForExtension
 import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.hls.DefaultHlsExtractorFactory
@@ -122,7 +123,13 @@ internal class BetterPlayer(
             this.customDefaultLoadControl.bufferForPlaybackAfterRebufferMs
         )
         loadControl = loadBuilder.build()
-        exoPlayer = ExoPlayer.Builder(context)
+        // Some devices (notably Huawei/HiSilicon) report a format as supported by the
+        // hardware decoder but then fail to initialise it. Decoder fallback lets
+        // ExoPlayer try the next decoder in the list (e.g. the software
+        // c2.android.* / OMX.google.* decoders) instead of failing playback.
+        val renderersFactory = DefaultRenderersFactory(context)
+            .setEnableDecoderFallback(true)
+        exoPlayer = ExoPlayer.Builder(context, renderersFactory)
             .setTrackSelector(trackSelector)
             .setLoadControl(loadControl)
             .build()
@@ -546,7 +553,7 @@ internal class BetterPlayer(
             }
 
             override fun onPlayerError(error: PlaybackException) {
-                eventSink.error("VideoError", "Video player had error $error", "")
+                eventSink.error("VideoError", PlaybackErrorFormatter.format(error), "")
             }
         })
         val reply: MutableMap<String, Any> = HashMap()
